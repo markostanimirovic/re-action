@@ -4,7 +4,9 @@ ClojureScript Framework for Building Single Page Applications
 
 ## Usage
 
-FIXME
+To use Re-Streamer in your Leiningen project, add this dependency in project.clj:
+
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.stanimirovic/re-action.svg)](https://clojars.org/org.clojars.stanimirovic/re-action)
 
 ## License
 
