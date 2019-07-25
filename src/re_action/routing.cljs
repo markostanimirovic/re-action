@@ -5,6 +5,7 @@
 (defrecord Redirection [from to])
 
 (defonce routes (atom []))
+(defonce not-found-route (atom nil))
 (defonce redirections (atom []))
 
 (defonce router (re-streamer/stream))
@@ -13,7 +14,9 @@
 (subscribe router #(set! (.. js/window -location -hash) (:path %)))
 
 (defn defroute [path page]
-  (swap! routes conj (->Route path page)))
+  (if (= path "**")
+    (reset! not-found-route (->Route path page))
+    (swap! routes conj (->Route path page))))
 
 (defn redirect [from to]
   (swap! redirections conj (->Redirection from to)))
@@ -24,9 +27,10 @@
                       (map :to)
                       (first))
                  path)
-        route (->> @routes
-                   (filter #(= (:path %) path))
-                   (first))]
+        route (or (->> @routes
+                       (filter #(= (:path %) path))
+                       (first))
+                  (assoc @not-found-route :path path))]
     (emit router route)))
 
 (defn start-routing []
