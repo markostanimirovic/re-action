@@ -34,7 +34,8 @@
                        (map :to)
                        (first)
                        (path->route))
-                  (path->route (:to @not-found-redirection)))]
+                  (path->route (:to @not-found-redirection))
+                  (throw (js/Error (str "Route: " path " is not defined"))))]
     (emit router route)))
 
 (defn start-routing []
