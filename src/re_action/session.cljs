@@ -7,6 +7,9 @@
   (emit store (assoc @(:state store) key value)))
 
 (defn get [key]
+  (key @(:state store)))
+
+(defn get-s [key]
   (-> store
       (re-streamer/map key)
       (re-streamer/distinct =)))

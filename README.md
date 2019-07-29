@@ -8,6 +8,10 @@ To use Re-Streamer in your Leiningen project, add this dependency in project.clj
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.stanimirovic/re-action.svg)](https://clojars.org/org.clojars.stanimirovic/re-action)
 
+## Examples
+
+Check examples directory.
+
 ## License
 
 Copyright © 2019 Marko Stanimirovic
