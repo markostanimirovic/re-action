@@ -1,4 +1,4 @@
-(ns re-action.routing
+(ns re-action.router
   (:require [re-streamer.core :as re-streamer :refer [subscribe emit]]))
 
 (defrecord Route [path page])
@@ -8,13 +8,13 @@
 (defonce ^:private redirections (atom #{}))
 (defonce ^:private not-found-redirection (atom nil))
 
-(defonce ^:private router (re-streamer/stream))
-(defonce ^:private active-page (re-streamer/map router :page))
-(defonce router-outlet (:state active-page))
+(defonce ^:private store (re-streamer/stream))
+(defonce ^:private current-page (re-streamer/map store :page))
+(defonce outlet (:state current-page))
 
-(subscribe router #(set! (.. js/window -location -hash) (:path %)))
+(subscribe store #(set! (.. js/window -location -hash) (:path %)))
 
-(defn route [path page]
+(defn defroute [path page]
   (swap! routes conj (->Route path page)))
 
 (defn redirect [from to]
@@ -36,7 +36,6 @@
                        (path->route))
                   (path->route (:to @not-found-redirection))
                   (throw (js/Error (str "Route: " path " is not defined"))))]
-    (emit router route)))
+    (emit store route)))
 
-(defn start-routing []
-  (navigate (.. js/window -location -hash)))
+(defn start [] (navigate (.. js/window -location -hash)))
