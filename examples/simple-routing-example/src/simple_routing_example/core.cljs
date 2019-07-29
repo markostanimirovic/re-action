@@ -1,7 +1,7 @@
 (ns simple-routing-example.core
     (:require
       [reagent.core :as r]
-      [re-action.routing :as routing]))
+      [re-action.router :as router]))
 
 ;; === Pages ===
 
@@ -22,25 +22,25 @@
 
 ;; === Routes ===
 
-(routing/route "#/home" home-page)
-(routing/route "#/about" about-page)
-(routing/route "#/not-found" not-found-page)
+(router/defroute "#/home" home-page)
+(router/defroute "#/about" about-page)
+(router/defroute "#/not-found" not-found-page)
 
-(routing/redirect "" "#/home")
-(routing/redirect "**" "#/not-found")
+(router/redirect "" "#/home")
+(router/redirect "**" "#/not-found")
 
-(routing/start-routing)
+(router/start)
 
 ;; === App Container ===
 
 (defn app []
   [:div
    [:h2 "App Header"]
-   [:button {:on-click #(routing/navigate "")} "Home"]
-   [:button {:on-click #(routing/navigate "#/about")} "About"]
-   [:button {:on-click #(routing/navigate "#/not-defined-route")} "Not Defined Route"]
+   [:button {:on-click #(router/navigate "")} "Home"]
+   [:button {:on-click #(router/navigate "#/about")} "About"]
+   [:button {:on-click #(router/navigate "#/not-defined-route")} "Not Defined Route"]
    [:br]
-   [@routing/router-outlet]
+   [@router/outlet]
    [:small "App Footer"]])
 
 (defn mount-root []
