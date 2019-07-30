@@ -1,15 +1,11 @@
 (ns re-action.session
-  (:require [re-streamer.core :as re-streamer :refer [emit]]))
+  (:require [re-action.core :refer [store select select-distinct patch-state!]])
+  (:refer-clojure :exclude [get]))
 
-(defonce ^:private store (re-streamer/behavior-stream))
+(defonce ^:private session (store {}))
 
 (defn put! [key value]
-  (emit store (assoc @(:state store) key value)))
+  (patch-state! session {key value}))
 
 (defn get [key]
-  (key @(:state store)))
-
-(defn get-s [key]
-  (-> store
-      (re-streamer/map key)
-      (re-streamer/distinct =)))
+  (select-distinct session key))

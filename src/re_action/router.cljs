@@ -38,4 +38,5 @@
                   (throw (js/Error (str "Route: " path " is not defined"))))]
     (emit store route)))
 
-(defn start [] (navigate (.. js/window -location -hash)))
+(defn start []
+  (navigate (.. js/window -location -hash)))
