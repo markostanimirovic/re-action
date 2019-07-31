@@ -12,15 +12,19 @@
 (defonce ^:private current-page (re-streamer/map store :page))
 (defonce outlet (:state current-page))
 
-(subscribe store #(set! (.. js/window -location -hash) (:path %)))
+(subscribe store (fn [state]
+                   (set! (.. js/window -location -hash) (clojure.string/join "/" (:path state)))))
 
 (defn defroute [path page]
-  (swap! routes conj (->Route path page)))
+  (let [path (filter (comp not empty?) (string/split path #"/"))]
+    (swap! routes conj (->Route path page))))
 
 (defn redirect [from to]
-  (if (= from "**")
-    (reset! not-found-redirection (->Redirection from to))
-    (swap! redirections conj (->Redirection from to))))
+  (let [to (filter (comp not empty?) (string/split to #"/"))
+        from (filter (comp not empty?) (string/split from #"/"))]
+    (if (= from ["**"])
+      (reset! not-found-redirection (->Redirection from to))
+      (swap! redirections conj (->Redirection from to)))))
 
 (defn- path->route [path]
   (->> @routes
@@ -28,7 +32,8 @@
        (first)))
 
 (defn navigate [path]
-  (let [route (or (path->route path)
+  (let [path (filter (comp not empty?) (string/split path #"/"))
+        route (or (path->route path)
                   (->> @redirections
                        (filter #(= (:from %) path))
                        (map :to)
@@ -39,4 +44,10 @@
     (emit store route)))
 
 (defn start []
-  (navigate (.. js/window -location -hash)))
+  (navigate (string/replace (.. js/window -location -hash) "#" ""))
+  (.addEventListener js/window "hashchange" (fn []
+                                              (let [path (string/replace (.. js/window -location -hash) "#" "")]
+                                                (if (not (= (:path @(:state store))
+                                                            (filter (comp not empty?) (string/split path "/"))))
+                                                  (navigate path))))))
+
