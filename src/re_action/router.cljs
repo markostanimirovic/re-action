@@ -30,7 +30,7 @@
   (string/join "/" segments))
 
 (defn- path->segments [path]
-  (filter (comp not empty?) (string/split path #"/")))
+  (filter (comp not empty?) (string/split (remove-hashes path) #"/")))
 
 (defn- segments->route [segments]
   (->> @(:state routes)
@@ -38,17 +38,17 @@
        (first)))
 
 (defn defroute [path page]
-  (patch-state! router {:routes (conj @(:state routes) (->Route (path->segments (remove-hashes path)) page))}))
+  (patch-state! router {:routes (conj @(:state routes) (->Route (path->segments path) page))}))
 
 (defn redirect [from-path to-path]
-  (let [from (path->segments (remove-hashes from-path))
-        to (path->segments (remove-hashes to-path))]
+  (let [from (path->segments from-path)
+        to (path->segments to-path)]
     (if (= from ["**"])
       (patch-state! router {:not-found-redirection (->Redirection from to)})
       (patch-state! router {:redirections (conj @(:state redirections) (->Redirection from to))}))))
 
 (defn navigate [path]
-  (let [segments (path->segments (remove-hashes path))
+  (let [segments (path->segments path)
         route (or (segments->route segments)
                   (->> @(:state redirections)
                        (filter #(= (:from %) segments))
@@ -60,9 +60,9 @@
     (patch-state! router {:current-route route})))
 
 (defn start []
-  (navigate (remove-hashes (current-path)))
+  (navigate (current-path))
   (subscribe current-segments #(set-current-path (segments->path %)))
   (set! (.-onhashchange js/window) (fn []
-                                     (let [path (remove-hashes (current-path))]
+                                     (let [path (current-path)]
                                        (if (not (= @(:state current-segments) (path->segments path)))
                                          (navigate path))))))
