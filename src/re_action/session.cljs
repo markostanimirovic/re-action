@@ -1,5 +1,5 @@
 (ns re-action.session
-  (:require [re-action.core :refer [store select select-distinct patch-state!]])
+  (:require [re-action.core :refer [store select patch-state!]])
   (:refer-clojure :exclude [get]))
 
 (defonce ^:private session (store {}))
@@ -8,4 +8,4 @@
   (patch-state! session {key value}))
 
 (defn get [key]
-  (select-distinct session key))
+  (select session key))

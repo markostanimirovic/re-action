@@ -1,20 +1,30 @@
 (ns re-action.router
-  (:require [re-streamer.core :as re-streamer :refer [subscribe emit]]
+  (:require [re-streamer.core :refer [subscribe]]
+            [re-action.core :refer [store select patch-state!]]
             [clojure.string :as string]))
 
+(defrecord Router [current-route routes redirections not-found-redirection])
 (defrecord Route [segments page])
 (defrecord Redirection [from to])
 
-(defonce ^:private routes (atom #{}))
-(defonce ^:private redirections (atom #{}))
-(defonce ^:private not-found-redirection (atom nil))
+(defonce ^:private router (store (->Router nil #{} #{} nil)))
 
-(defonce ^:private store (re-streamer/stream))
-(defonce ^:private current-page (re-streamer/map store :page))
+(defonce ^:private current-route (select router :current-route))
+(defonce ^:private current-page (select current-route :page))
+(defonce ^:private current-segments (select current-route :segments))
+
+(defonce ^:private routes (select router :routes))
+(defonce ^:private redirections (select router :redirections))
+(defonce ^:private not-found-redirection (select router :not-found-redirection))
+
 (defonce outlet (:state current-page))
 
 (defn- current-path [] (.. js/window -location -hash))
+
 (defn- set-current-path [path] (set! (.. js/window -location -hash) path))
+
+(defn- remove-hashes [path]
+  (string/replace path "#" ""))
 
 (defn- segments->path [segments]
   (string/join "/" segments))
@@ -23,39 +33,36 @@
   (filter (comp not empty?) (string/split path #"/")))
 
 (defn- segments->route [segments]
-  (->> @routes
+  (->> @(:state routes)
        (filter #(= (:segments %) segments))
        (first)))
 
-(subscribe store #(set-current-path (segments->path (:segments %))))
-
 (defn defroute [path page]
-  (let [segments (path->segments path)]
-    (swap! routes conj (->Route segments page))))
+  (patch-state! router {:routes (conj @(:state routes) (->Route (path->segments (remove-hashes path)) page))}))
 
-(defn redirect [from to]
-  (let [segments-from (path->segments from)
-        segments-to (path->segments to)]
-    (if (= segments-from ["**"])
-      (reset! not-found-redirection (->Redirection segments-from segments-to))
-      (swap! redirections conj (->Redirection segments-from segments-to)))))
+(defn redirect [from-path to-path]
+  (let [from (path->segments (remove-hashes from-path))
+        to (path->segments (remove-hashes to-path))]
+    (if (= from ["**"])
+      (patch-state! router {:not-found-redirection (->Redirection from to)})
+      (patch-state! router {:redirections (conj @(:state redirections) (->Redirection from to))}))))
 
 (defn navigate [path]
-  (let [segments (path->segments path)
+  (let [segments (path->segments (remove-hashes path))
         route (or (segments->route segments)
-                  (->> @redirections
+                  (->> @(:state redirections)
                        (filter #(= (:from %) segments))
                        (map :to)
                        (first)
                        (segments->route))
-                  (segments->route (:to @not-found-redirection))
+                  (segments->route (:to @(:state not-found-redirection)))
                   (throw (js/Error (str "Route: " segments " is not defined"))))]
-    (emit store route)))
+    (patch-state! router {:current-route route})))
 
 (defn start []
-  (navigate (string/replace (current-path) "#" ""))
+  (navigate (remove-hashes (current-path)))
+  (subscribe current-segments #(set-current-path (segments->path %)))
   (set! (.-onhashchange js/window) (fn []
-                                     (let [path (string/replace (current-path) "#" "")]
-                                       (if (not (= (:segments @(:state store)) (path->segments path)))
+                                     (let [path (remove-hashes (current-path))]
+                                       (if (not (= @(:state current-segments) (path->segments path)))
                                          (navigate path))))))
-
