@@ -22,12 +22,12 @@
 
 ;; === Routes ===
 
-(router/defroute "#/home" home-page)
-(router/defroute "#/about" about-page)
-(router/defroute "#/not-found" not-found-page)
+(router/defroute "/home" home-page)
+(router/defroute "/about/me" about-page)
+(router/defroute "/not-found" not-found-page)
 
-(router/redirect "" "#/home")
-(router/redirect "**" "#/not-found")
+(router/redirect "/" "/home")
+(router/redirect "**" "/not-found")
 
 (router/start)
 
@@ -36,9 +36,9 @@
 (defn app []
   [:div
    [:h2 "App Header"]
-   [:button {:on-click #(router/navigate "")} "Home"]
-   [:button {:on-click #(router/navigate "#/about")} "About"]
-   [:button {:on-click #(router/navigate "#/not-defined-route")} "Not Defined Route"]
+   [:button {:on-click #(router/navigate "/")} "Home"]
+   [:button {:on-click #(router/navigate "/about/me")} "About"]
+   [:button {:on-click #(router/navigate "/not-defined-route-123")} "Not Defined Route"]
    [:br]
    [@router/outlet]
    [:small "App Footer"]])
