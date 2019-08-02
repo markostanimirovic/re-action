@@ -1,4 +1,4 @@
-(defproject org.clojars.stanimirovic/re-action "0.2.0"
+(defproject org.clojars.stanimirovic/re-action "0.2.1"
   :description "ClojureScript Framework for Building Single Page Applications"
   :url "https://github.com/stanimirovic/re-action"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"

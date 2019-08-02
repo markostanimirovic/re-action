@@ -4,15 +4,12 @@
 (defn store [state]
   (re-streamer/behavior-stream state))
 
-(defn select
-  ([store key]
-   (-> store
-       (re-streamer/map key)
-       (re-streamer/distinct =)))
-  ([store & keys]
-   (-> store
-       (re-streamer/pluck keys)
-       (re-streamer/distinct =))))
+(defn select [store key & keys]
+  (re-streamer/distinct
+    (if (nil? keys)
+      (re-streamer/map store key)
+      (re-streamer/pluck store (conj keys key)))
+    =))
 
 (defn update-state! [store state]
   (emit store state))
