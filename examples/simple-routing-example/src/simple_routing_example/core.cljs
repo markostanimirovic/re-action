@@ -28,7 +28,7 @@
 
 (router/defroute "/home" home-page)
 (router/defroute "/foo/bar" foo-bar-page)
-(router/defroute "/todo/::id" todo-details-page)
+(router/defroute "/todo/:id" todo-details-page)
 (router/defroute "/not-found" not-found-page)
 
 (router/redirect "/" "/home")
