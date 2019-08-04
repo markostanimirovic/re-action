@@ -18,3 +18,33 @@ a {
     margin-bottom: 1rem;
     text-align: center;
 }
+
+.search-input {
+    max-width: 360px;
+    margin: auto;
+}
+
+.card-grid {
+    margin-top: 1rem;
+    display: flex;
+    flex-flow: row wrap;
+    align-content: center;
+}
+
+.card-grid-item {
+    width: 50%;
+}
+
+.card {
+    margin: 0.5rem;
+}
+
+.card:hover {
+    background-color: #f8f9fa;
+}
+
+.card-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
