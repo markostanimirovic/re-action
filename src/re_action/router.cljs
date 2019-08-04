@@ -33,7 +33,7 @@
 
 (defn- segments-match? [segments-from-route segments]
   (every? true? (map (fn [seg-from-route seg]
-                       (if (string/starts-with? seg-from-route "::")
+                       (if (string/starts-with? seg-from-route ":")
                          true
                          (= seg-from-route seg)))
                      segments-from-route
@@ -47,7 +47,7 @@
        (first)))
 
 (defn- segments->params [segments-from-route segments]
-  (let [params (into {} (filter #(string/starts-with? (name (nth % 0)) "::")
+  (let [params (into {} (filter #(string/starts-with? (name (nth % 0)) ":")
                                 (map #(-> [(keyword %1) %2])
                                      segments-from-route
                                      segments)))]
