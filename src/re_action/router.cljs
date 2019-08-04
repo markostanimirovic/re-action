@@ -10,14 +10,13 @@
 (defonce ^:private router (store (->Router nil #{} #{} nil)))
 
 (defonce ^:private current-route (select router :current-route))
-(defonce ^:private current-page (select current-route :page))
-(defonce ^:private current-segments (select current-route :segments))
-
 (defonce ^:private routes (select router :routes))
 (defonce ^:private redirections (select router :redirections))
 (defonce ^:private not-found-redirection (select router :not-found-redirection))
 
-(defonce outlet (:state current-page))
+(defn outlet []
+  (let [current-route-state @(:state current-route)]
+    (into [(:page current-route-state)] (vals (:params current-route-state)))))
 
 (defn- current-path [] (.. js/window -location -hash))
 
@@ -83,7 +82,4 @@
                              (let [segments (map #(or ((keyword %) (:params route)) %)
                                                  (:segments route))]
                                (set-current-path (segments->path segments)))))
-  (set! (.-onhashchange js/window) (fn []
-                                     (let [path (current-path)]
-                                       (if (not (= @(:state current-segments) (path->segments path)))
-                                         (navigate path))))))
+  (set! (.-onhashchange js/window) #(navigate (current-path))))
