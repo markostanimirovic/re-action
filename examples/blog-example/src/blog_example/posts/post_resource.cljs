@@ -32,3 +32,8 @@
        (filter #(or (re-find (js/RegExp. (:search payload) "i") (:title %))
                     (re-find (js/RegExp. (:search payload) "i") (:body %))))
        (take (:page-size payload))))
+
+(defn get-post [id]
+  (->> posts
+       (filter #(= id (:id %)))
+       (first)))
