@@ -1,18 +1,11 @@
 (ns blog-example.core
-    (:require
-      [reagent.core :as r]))
-
-;; -------------------------
-;; Views
-
-(defn home-page []
-  [:div [:h2 "Welcome to Reagent"]])
-
-;; -------------------------
-;; Initialize app
+  (:require [reagent.core :as r]
+            [blog-example.app :refer [app]]
+            [re-action.router :as router]))
 
 (defn mount-root []
-  (r/render [home-page] (.getElementById js/document "app")))
+  (router/start)
+  (r/render [app] (.getElementById js/document "app")))
 
 (defn init! []
   (mount-root))
