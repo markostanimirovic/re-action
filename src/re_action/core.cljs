@@ -1,5 +1,5 @@
 (ns re-action.core
-  (:require [re-streamer.core :as re-streamer :refer [subscribe emit]]))
+  (:require [re-streamer.core :as re-streamer :refer [emit]]))
 
 (defn store [state]
   (re-streamer/behavior-stream state))
@@ -10,7 +10,7 @@
     (re-streamer/pluck store (conj keys key))))
 
 (defn select-distinct [store key & keys]
-  (re-streamer/distinct (select store key keys) =))
+  (re-streamer/distinct (apply select store key keys) =))
 
 (defn update-state! [store state]
   (emit store state))

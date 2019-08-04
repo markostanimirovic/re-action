@@ -1,6 +1,7 @@
 (ns re-action.router
-  (:require [re-streamer.core :refer [subscribe]]
-            [re-action.core :refer [store select patch-state!]]
+  (:require [re-action.core :refer [store select patch-state!]]
+            [re-action.session :as session]
+            [re-streamer.core :refer [subscribe]]
             [clojure.string :as string]))
 
 (defrecord Router [current-route routes redirections not-found-redirection])
@@ -81,5 +82,9 @@
   (subscribe current-route (fn [route]
                              (let [segments (map #(or ((keyword %) (:params route)) %)
                                                  (:segments route))]
-                               (set-current-path (segments->path segments)))))
+                               (set-current-path (segments->path segments))
+                               (session/put! :current-route {:segments segments
+                                                             :params   (into {} (map (fn [[k v]]
+                                                                                       [(keyword (subs (name k) 1)) v])
+                                                                                     (:params route)))}))))
   (set! (.-onhashchange js/window) #(navigate (current-path))))
