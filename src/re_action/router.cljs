@@ -73,7 +73,7 @@
                        (first)
                        (segments->route))
                   (segments->route (:to @(:state not-found-redirection)))
-                  (throw (js/Error (str "Route: " segments " is not defined"))))
+                  (throw (js/Error (str "Route: " path " is not defined"))))
         params (segments->params (:segments route) segments)]
     (patch-state! router {:current-route (assoc route :params params)})))
 
