@@ -2,6 +2,10 @@ a {
     cursor: pointer;
 }
 
+a:hover {
+    background-color: #f8f9fa;
+}
+
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -11,12 +15,6 @@ a {
 
 .body {
     flex: 1;
-    margin-top: 1rem;
-}
-
-.footer {
-    margin-bottom: 1rem;
-    text-align: center;
 }
 
 .search-input {
@@ -24,27 +22,10 @@ a {
     margin: auto;
 }
 
-.card-grid {
+.buffer-top {
     margin-top: 1rem;
-    display: flex;
-    flex-flow: row wrap;
-    align-content: center;
 }
 
-.card-grid-item {
-    width: 50%;
-}
-
-.card {
-    margin: 0.5rem;
-}
-
-.card:hover {
-    background-color: #f8f9fa;
-}
-
-.card-text {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.buffer-bottom {
+    margin-bottom: 1rem;
 }

@@ -9,7 +9,7 @@
 
 (defn- post-index-header [search update-search]
   [:div {:class "text-center"}
-   [:h1 "Posts"]
+   [:h2 "Posts"]
    [:input {:type        "text"
             :placeholder "Search"
             :class       "form-control search-input"
@@ -17,49 +17,42 @@
             :on-change   #(update-search (.. % -target -value))}]])
 
 (defn- post-index-list [posts]
-  [:div {:class "card-grid"}
+  [:div {:class "row buffer-top"}
    (for [post posts]
-     [:a {:class    "card-grid-item"
-          :key      (:id post)
-          :on-click #(router/navigate (str "/posts/" (:id post)))}
-      [:div {:class "card"}
+     [:div {:class "col-md-3 col-sm-4 buffer-bottom"
+            :key   (:id post)}
+      [:a {:class    "card"
+           :on-click #(router/navigate (str "/posts/" (:id post)))}
        [:div {:class "card-body"}
         [:h5 {:class "card-title"} (:title post)]
-        [:p {:class "card-text"} (:body post)]]]])])
+        [:p {:class "card-text text-truncate"} (:body post)]]]])])
 
-(defn- post-index-footer [page-sizes page-size update-page-size]
+(defn- post-index-footer [page-sizes selected-size update-selected-size]
   [:div {:class "text-center"}
-   (for [ps page-sizes]
-     [:button {:class    (str "btn mr-1 " (if (= ps page-size) "btn-primary" "btn-light"))
-               :key      ps
-               :on-click (fn [_] (update-page-size ps))}
-      ps])])
-
-;; === Initial State ===
-
-(defonce ^:private post-index-init-state {:posts      []
-                                          :page-sizes [5 10 15 20]
-                                          :page-size  5
-                                          :search     ""})
+   (for [page-size page-sizes]
+     [:button {:class    (str "btn mr-1 " (if (= page-size selected-size) "btn-primary" "btn-light"))
+               :key      page-size
+               :on-click (fn [_] (update-selected-size page-size))} page-size])])
 
 ;; === Facade ===
 
 (defn- post-index-facade []
-  (let [store (re-action/store post-index-init-state)
+  (let [init-state {:posts [] :page-sizes [5 10 15 20] :selected-size 5 :search ""}
+        store (re-action/store init-state)
         posts (re-action/select store :posts)
         page-sizes (re-action/select store :page-sizes)
-        page-size (re-action/select store :page-size)
+        selected-size (re-action/select store :selected-size)
         search (re-action/select store :search)
-        get-posts (re-action/select-distinct store :page-size :search)]
+        get-posts (re-action/select-distinct store :selected-size :search)]
 
     (subscribe get-posts #(re-action/patch-state! store {:posts (resource/get-posts %)}))
 
-    {:posts            posts
-     :page-sizes       page-sizes
-     :page-size        page-size
-     :search           search
-     :update-page-size #(re-action/patch-state! store {:page-size %})
-     :update-search    #(re-action/patch-state! store {:search %})}))
+    {:posts                posts
+     :page-sizes           page-sizes
+     :selected-size        selected-size
+     :search               search
+     :update-selected-size #(re-action/patch-state! store {:selected-size %})
+     :update-search        #(re-action/patch-state! store {:search %})}))
 
 ;; === Container Component ===
 
@@ -70,4 +63,4 @@
                                         [post-index-header @(-> facade :search :state) (:update-search facade)]
                                         [post-index-list @(-> facade :posts :state)]
                                         [post-index-footer @(-> facade :page-sizes :state)
-                                         @(-> facade :page-size :state) (:update-page-size facade)]])})))
+                                         @(-> facade :selected-size :state) (:update-selected-size facade)]])})))

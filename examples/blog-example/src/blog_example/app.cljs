@@ -15,5 +15,5 @@
 (defn app []
   [:div {:class "wrapper"}
    [header]
-   [:div {:class "container body"} (router/outlet)]
+   [:div {:class "container body buffer-top"} (router/outlet)]
    [footer]])

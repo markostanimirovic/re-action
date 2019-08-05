@@ -13,7 +13,7 @@
           :on-click #(router/navigate "/posts")} "Posts"]]]])
 
 (defn footer []
-  [:footer {:class "container footer"}
+  [:footer {:class "container buffer-bottom text-center"}
    [:hr]
    [:span {:class "text-muted"}
     (gstring/unescapeEntities "&copy;") " 2019 Marko Stanimirović"]])
