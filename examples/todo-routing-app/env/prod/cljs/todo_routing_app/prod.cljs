@@ -1,6 +1,6 @@
-(ns simple-routing-example.prod
+(ns todo-routing-app.prod
   (:require
-    [simple-routing-example.core :as core]))
+    [todo-routing-app.core :as core]))
 
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))

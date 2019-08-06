@@ -1,6 +1,6 @@
-(ns ^:figwheel-no-load simple-routing-example.dev
+(ns ^:figwheel-no-load todo-routing-app.dev
   (:require
-    [simple-routing-example.core :as core]
+    [todo-routing-app.core :as core]
     [devtools.core :as devtools]))
 
 (extend-protocol IPrintWithWriter

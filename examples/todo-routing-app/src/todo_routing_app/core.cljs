@@ -1,4 +1,4 @@
-(ns simple-routing-example.core
+(ns todo-routing-app.core
   (:require [reagent.core :as r]
             [re-action.router :as router]
             [re-action.session :as session]
