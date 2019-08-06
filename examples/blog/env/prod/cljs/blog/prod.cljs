@@ -1,6 +1,6 @@
-(ns blog-example.prod
+(ns blog.prod
   (:require
-    [blog-example.core :as core]))
+    [blog.core :as core]))
 
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))

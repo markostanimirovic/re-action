@@ -1,6 +1,6 @@
-(ns ^:figwheel-no-load blog-example.dev
+(ns ^:figwheel-no-load blog.dev
   (:require
-    [blog-example.core :as core]
+    [blog.core :as core]
     [devtools.core :as devtools]))
 
 (extend-protocol IPrintWithWriter
