@@ -18,6 +18,12 @@
    [:span {:class "text-muted"}
     (gstring/unescapeEntities "&copy;") " 2019 Marko Stanimirović"]])
 
+(defn shell []
+  [:div {:class "wrapper"}
+   [header]
+   [:div {:class "container body buffer-top"} (router/outlet)]
+   [footer]])
+
 (defn home []
   [:div {:class "text-center"}
    [:h1 "Welcome to Clojure Blog!"]

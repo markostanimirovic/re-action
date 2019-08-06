@@ -1,13 +1,17 @@
 (ns blog-example.posts.post-details
-  (:require [blog-example.posts.post-resource :as resource]
+  (:require [blog-example.posts.resource :as resource]
             [re-action.router :as router]))
 
-(defn- post-details-facade []
+;; === Facade ===
+
+(defn- facade []
   {:get-post #(or (resource/get-post (js/parseInt %))
                   (router/navigate "/not-found"))})
 
-(defn post-details-container [id]
-  (let [facade (post-details-facade)
+;; === Container Component ===
+
+(defn container [id]
+  (let [facade (facade)
         post ((:get-post facade) id)]
     [:div {:class "card"}
      [:div {:class "card-header"} "Post Details"]

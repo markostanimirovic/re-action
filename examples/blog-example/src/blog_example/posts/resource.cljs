@@ -1,4 +1,4 @@
-(ns blog-example.posts.post-resource
+(ns blog-example.posts.resource
   (:require [clojure.string :as string]))
 
 (defonce ^:private posts [{:id 1 :title "Post 1" :body "This is a post 1 body"}

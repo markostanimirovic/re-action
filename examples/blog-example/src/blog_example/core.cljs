@@ -1,11 +1,11 @@
 (ns blog-example.core
-  (:require [reagent.core :as r]
-            [blog-example.app :refer [app]]
-            [re-action.router :as router]))
+  (:require [blog-example.shared :as shared]
+            [blog-example.routing :as routing]
+            [reagent.core :as r]))
 
-(defn mount-root []
-  (router/start)
-  (r/render [app] (.getElementById js/document "app")))
+(defn render-app []
+  (r/render [shared/shell] (.getElementById js/document "app")))
 
 (defn init! []
-  (mount-root))
+  (routing/init)
+  (render-app))
