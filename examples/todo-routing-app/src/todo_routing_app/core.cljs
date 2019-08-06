@@ -1,29 +1,29 @@
 (ns todo-routing-app.core
-  (:require [reagent.core :as r]
-            [re-action.router :as router]
+  (:require [re-action.router :as router]
             [re-action.session :as session]
+            [reagent.core :as r]
             [re-streamer.core :refer [subscribe unsubscribe]]))
 
 ;; === Pages ===
 
-(defn home-page []
+(defn todo-home []
   [:div
    [:h3 "Home"]
-   [:p "Welcome to home page!"]])
+   [:p "Welcome to TODO home page!"]])
 
-(defn foo-bar-page []
+(defn todo-list []
   [:div
-   [:h3 "Foo Bar"]
-   [:p "This is foo bar page"]])
+   [:h3 "TODO List"]
+   [:p "This is TODO list page"]])
 
-(defn todo-details-page [id]
+(defn todo-details [id]
   [:div
    [:h3 "TODO Details"]
    [:p (str "Body of TODO with id: " id)]])
 
 ;; === Example: Get current route with segments and params from session ===
 
-(defn todo-edit-page []
+(defn todo-edit []
   (let [current-route (session/get :current-route)
         current-route-sub (subscribe current-route #(println %))]
     (r/create-class {:reagent-render         (fn []
@@ -34,21 +34,21 @@
 
                      :component-will-unmount #(unsubscribe current-route current-route-sub)})))
 
-(defn not-found-page []
+(defn not-found []
   [:div
    [:h3 "404 Not Found"]
-   [:p "Oops! Something went wrong"]])
+   [:p "Oops! Something went wrong!"]])
 
 ;; === Routes ===
 
-(router/defroute "/home" home-page)
-(router/defroute "/foo/bar" foo-bar-page)
-(router/defroute "/todo/:id" todo-details-page)
-(router/defroute "/todo/:id/edit" todo-edit-page)
-(router/defroute "/not-found" not-found-page)
+(router/defroute "/home" todo-home)
+(router/defroute "/todo/list" todo-list)
+(router/defroute "/todo/:id" todo-details)
+(router/defroute "/todo/:id/edit" todo-edit)
+(router/defroute "/not-found" not-found)
 
 (router/redirect "/" "/home")
-(router/redirect "/foo-bar" "/foo/bar")
+(router/redirect "/todo" "/todo/list")
 (router/redirect "**" "/not-found")
 
 (router/start)
@@ -57,17 +57,17 @@
 
 (defn app []
   [:div
-   [:h2 "App Header"]
-   [:button {:on-click #(router/navigate "/")} "Home"]
-   [:button {:on-click #(router/navigate "/foo/bar")} "Foo Bar"]
+   [:h2 "TODO App Header"]
+   [:button {:on-click #(router/navigate "/")} "TODO Home"]
+   [:button {:on-click #(router/navigate "/todo")} "TODO List"]
    [:button {:on-click #(router/navigate "/todo/1")} "TODO 1 Details"]
    [:button {:on-click #(router/navigate "/todo/2")} "TODO 2 Details"]
    [:button {:on-click #(router/navigate "/todo/1/edit")} "TODO 1 Edit"]
    [:button {:on-click #(router/navigate "/todo/2/edit")} "TODO 2 Edit"]
-   [:button {:on-click #(router/navigate "/not-defined-route-123")} "Not Defined Route"]
+   [:button {:on-click #(router/navigate "/some-not-defined-route")} "Not Found"]
    [:br]
    (router/outlet)
-   [:small "App Footer"]])
+   [:small "TODO App Footer"]])
 
 (defn mount-root []
   (r/render [app] (.getElementById js/document "app")))
