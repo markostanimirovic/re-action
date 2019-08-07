@@ -47,10 +47,10 @@
 
     (subscribe get-posts #(re-action/patch-state! store {:posts (resource/get-posts %)}))
 
-    {:posts                posts
-     :page-sizes           page-sizes
-     :selected-size        selected-size
-     :search               search
+    {:posts                (:state posts)
+     :page-sizes           (:state page-sizes)
+     :selected-size        (:state selected-size)
+     :search               (:state search)
      :update-selected-size #(re-action/patch-state! store {:selected-size %})
      :update-search        #(re-action/patch-state! store {:search %})}))
 
@@ -60,7 +60,7 @@
   (let [facade (facade)]
     (r/create-class {:reagent-render (fn []
                                        [:div
-                                        [search @(-> facade :search :state) (:update-search facade)]
-                                        [posts-list @(-> facade :posts :state)]
-                                        [pagination @(-> facade :page-sizes :state) @(-> facade :selected-size :state)
+                                        [search @(:search facade) (:update-search facade)]
+                                        [posts-list @(:posts facade)]
+                                        [pagination @(:page-sizes facade) @(:selected-size facade)
                                          (:update-selected-size facade)]])})))
