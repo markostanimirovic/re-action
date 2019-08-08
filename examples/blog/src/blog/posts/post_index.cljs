@@ -1,6 +1,5 @@
 (ns blog.posts.post-index
   (:require [blog.posts.resource :as resource]
-            [reagent.core :as r]
             [re-action.router :as router]
             [re-action.core :as re-action]
             [re-streamer.core :refer [subscribe]]))
@@ -58,9 +57,8 @@
 
 (defn container []
   (let [facade (facade)]
-    (r/create-class {:reagent-render (fn []
-                                       [:div
-                                        [search @(:search facade) (:update-search facade)]
-                                        [posts-list @(:posts facade)]
-                                        [pagination @(:page-sizes facade) @(:selected-size facade)
-                                         (:update-selected-size facade)]])})))
+    (fn []
+      [:div
+       [search @(:search facade) (:update-search facade)]
+       [posts-list @(:posts facade)]
+       [pagination @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))
