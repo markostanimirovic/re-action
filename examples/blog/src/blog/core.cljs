@@ -3,9 +3,9 @@
             [blog.routing :as routing]
             [reagent.core :as r]))
 
-(defn render-app []
+(defn mount-root []
   (r/render [shared/shell] (.getElementById js/document "app")))
 
 (defn init! []
   (routing/init)
-  (render-app))
+  (mount-root))
