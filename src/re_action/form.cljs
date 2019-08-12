@@ -1,17 +1,39 @@
 (ns re-action.form
   (:require [reagent.core :as r]))
 
-(defn touched? [form id]
-  (get-in form [id :touched]))
+(defn touched?
+  ([form]
+   (->> form
+        (map #(:touched (val %)))
+        (every? true?)))
+  ([form id]
+   (get-in form [id :touched])))
 
-(defn dirty? [form id]
-  (get-in form [id :dirty]))
+(defn dirty?
+  ([form]
+   (->> form
+        (map #(:dirty (val %)))
+        (every? true?)))
+  ([form id]
+   (get-in form [id :dirty])))
 
-(defn valid? [form id]
-  (every? false? (vals (get-in form [id :errors]))))
+(defn valid?
+  ([form]
+   (->> form
+        (map #(vals (:errors (val %))))
+        (reduce #(into %1 %2) '())
+        (every? false?)))
+  ([form id]
+   (->> (get-in form [id :errors])
+        (vals)
+        (every? false?)))
+  ([form id error]
+   (not (get-in form [id :errors error]))))
 
 (defn value [form]
-  (into {} (map (fn [[id props]] [id (:value props)]) form)))
+  (->> form
+       (map #(-> [(key %) (:value (val %))]))
+       (into {})))
 
 (defn init [form]
   (let [controls (r/atom (into {} (map (fn [[id validators]] [id {:touched false
