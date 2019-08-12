@@ -35,26 +35,29 @@
        (map #(-> [(key %) (:value (val %))]))
        (into {})))
 
-(defn init [form]
-  (let [controls (r/atom (into {} (map (fn [[id validators]] [id {:touched false
-                                                                  :dirty   false
-                                                                  :value   nil
-                                                                  :errors  (into {} (map #(-> [(key %) false])
-                                                                                         validators))}])
-                                       form)))]
+(defn- errors [validators value]
+  (->> validators
+       (map #(-> [(key %) (not ((val %) value))]))
+       (into {})))
+
+
+(defn create [form]
+  (let [controls (r/atom {})]
     (r/after-render
-      (fn []
-        (doseq [[id validators] form]
-          (let [element (.getElementById js/document (name id))]
-            (swap! controls assoc-in [id :value] (.. element -value))
-            (swap! controls assoc-in [id :errors] (into {}
-                                                        (map (fn [[name f]] [name (not (f (.. element -value)))])
-                                                             validators)))
-            (set! (.-oninput element) (fn [e]
-                                        (swap! controls update id
-                                               assoc :value (.. e -target -value) :dirty true
-                                               :errors (into {} (map (fn [[name f]] [name (not (f (.. e -target -value)))])
-                                                                     validators)))))
-            (set! (.-onfocus element) (fn [e]
-                                        (swap! controls assoc-in [id :touched] true)))))))
+      #(doseq [[id validators] form]
+         (let [element (.getElementById js/document (name id))
+               value (.-value element)]
+           (swap! controls update id assoc
+                  :value value
+                  :errors (errors validators value))
+
+           (set! (.-oninput element) (fn [e]
+                                       (let [value (.. e -target -value)]
+                                         (swap! controls update id assoc
+                                                :value value
+                                                :dirty true
+                                                :errors (errors validators value)))))
+
+           (set! (.-onfocus element) (fn [_]
+                                       (swap! controls assoc-in [id :touched] true))))))
     controls))
