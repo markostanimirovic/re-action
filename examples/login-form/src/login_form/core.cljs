@@ -8,28 +8,64 @@
     (fn []
       (when (not (nil? @login-form))
         [:div.alert.alert-success
-         "Username: " (:username @login-form)
+         [:b "Login Credentials:"]
+         " Username: " (:username @login-form)
          ", Password: " (:password @login-form)]))))
 
 (defn login-form []
   (let [login-form (form/create {:username {:required (comp not empty?)}
-                                 :password {:required (comp not empty?)}})]
+                                 :password {:required   (comp not empty?)
+                                            :min-length #(< 4 (count %))
+                                            :strength   #(.test (js/RegExp "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])") %)}})]
     (fn []
-      [:form {:on-submit #(do (.preventDefault %)
-                              (session/put! :login-form (form/value @login-form)))}
+      [:form {:on-submit     #(do (.preventDefault %)
+                                  (session/put! :login-form (form/value @login-form)))
+              :auto-complete :off}
        [:div.form-group
-        [:label {:for :username} "Username"]
-        [:input.form-control {:id :username :type :text}]]
+        [:label {:for :username} "Username" [:span.text-danger " *"]]
+        [:input.form-control {:id    :username
+                              :type  :text
+                              :class (list
+                                       (when (and (form/valid? @login-form :username)
+                                                  (or (form/touched? @login-form :username)
+                                                      (form/dirty? @login-form :username))) :is-valid)
+                                       (when (and (not (form/valid? @login-form :username))
+                                                  (or (form/touched? @login-form :username)
+                                                      (form/dirty? @login-form :username))) :is-invalid))}]
+        (when (and (not (form/valid? @login-form :username))
+                   (or (form/touched? @login-form :username)
+                       (form/dirty? @login-form :username)))
+          [:div.invalid-feedback "Username is required field."])]
        [:div.form-group
-        [:label {:for :password} "Password"]
-        [:input.form-control {:id :password :type :password}]]
+        [:label {:for :password} "Password" [:span.text-danger " *"]]
+        [:input.form-control {:id    :password
+                              :type  :password
+                              :class (list
+                                       (when (and (form/valid? @login-form :password)
+                                                  (or (form/touched? @login-form :password)
+                                                      (form/dirty? @login-form :password))) :is-valid)
+                                       (when (and (not (form/valid? @login-form :password))
+                                                  (or (form/touched? @login-form :password)
+                                                      (form/dirty? @login-form :password))) :is-invalid))}]
+        (when (and (not (form/valid? @login-form :password))
+                   (or (form/touched? @login-form :password)
+                       (form/dirty? @login-form :password)))
+          (list
+            (when (not (form/valid? @login-form :password :required))
+              [:div.invalid-feedback {:key :required} "Password is required field."])
+            (when (not (form/valid? @login-form :password :min-length))
+              [:div.invalid-feedback {:key :min-length} "Password must have at least 5 characters."])
+            (when (not (form/valid? @login-form :password :strength))
+              [:div.invalid-feedback {:key :strength}
+               "Password must contain upper case letters, lower case letters and numbers."])))]
        [:button.btn.btn-primary {:disabled (not (form/valid? @login-form))} "Login"]])))
 
 (defn app []
-  [:div.container
+  [:div.container.buffer-top
    [:div.row.justify-content-center
-    [:div.col-md-12 [credentials-alert]]
-    [:div.col-md-12 [login-form]]]])
+    [:div.col-md-9 [credentials-alert]]]
+   [:div.row.justify-content-center
+    [:div.col-md-9 [login-form]]]])
 
 (defn mount-root []
   (r/render [app] (.getElementById js/document "app")))
