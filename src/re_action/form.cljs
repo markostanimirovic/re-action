@@ -56,6 +56,6 @@
                                                 :value value
                                                 :dirty true
                                                 :errors (errors validators value)))))
-           (set! (.-onfocus element) (fn [_]
-                                       (swap! controls assoc-in [id :touched] true))))))
+           (set! (.-onblur element) (fn [_]
+                                      (swap! controls assoc-in [id :touched] true))))))
     controls))
