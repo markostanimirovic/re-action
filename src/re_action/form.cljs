@@ -30,6 +30,28 @@
   ([form id error]
    (not (get-in form [id :errors error]))))
 
+(defn touched-or-dirty?
+  ([form]
+   (or (touched? form) (dirty? form)))
+  ([form id]
+   (or (touched? form id) (dirty? form id))))
+
+(defn valid-and-touched-or-dirty?
+  ([form]
+   (and (valid? form) (touched-or-dirty? form)))
+  ([form id]
+   (and (valid? form id) (touched-or-dirty? form id)))
+  ([form id error]
+   (and (valid? form id error) (touched-or-dirty? form id))))
+
+(defn invalid-and-touched-or-dirty?
+  ([form]
+   (and (not (valid? form)) (touched-or-dirty? form)))
+  ([form id]
+   (and (not (valid? form id)) (touched-or-dirty? form id)))
+  ([form id error]
+   (and (not (valid? form id error)) (touched-or-dirty? form id))))
+
 (defn value [form]
   (->> form
        (map #(-> [(key %) (:value (val %))]))
