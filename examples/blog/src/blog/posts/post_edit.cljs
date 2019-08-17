@@ -8,10 +8,11 @@
 ;; === Presentational Components ===
 
 (defn header [edit-mode back]
-  [:div.card-header
-   [:span (str (if (true? edit-mode) "Edit " "Create ") "Post")]
-   [:span.action-icon.float-right {:on-click #(back)}
-    [:i.fas.fa-chevron-left]]])
+  [:div.card-header.page-header
+   [:div.page-title [:h5 (str (if (true? edit-mode) "Edit " "Create ") "Post")]]
+   [:div.page-actions
+    [:span.action-button {:on-click #(back)}
+     [:i.fas.fa-chevron-left]]]])
 
 (defn body [post save]
   (let [post-form (form/create {:title {:required (comp not empty?)}

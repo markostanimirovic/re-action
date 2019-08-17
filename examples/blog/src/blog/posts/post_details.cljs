@@ -7,11 +7,11 @@
 ;; === Presentational Components ===
 
 (defn header [edit back]
-  [:div.card-header
-   [:span "Post Details"]
-   [:div.float-right
-    [:span.action-icon {:on-click #(edit)} [:i.fas.fa-pen]]
-    [:span.action-icon {:on-click #(back)} [:i.fas.fa-chevron-left]]]])
+  [:div.card-header.page-header
+   [:div.page-title [:h5 "Post Details"]]
+   [:div.page-actions
+    [:span.action-button.mr-1 {:on-click #(edit)} [:i.fas.fa-pen]]
+    [:span.action-button {:on-click #(back)} [:i.fas.fa-chevron-left]]]])
 
 (defn body [post]
   [:div.card-body

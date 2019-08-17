@@ -7,32 +7,31 @@
 ;; === Presentational Components ===
 
 (defn- header [search update-search create]
-  [:div {:class "text-center"}
-   [:h2 "Posts"]
-   [:button.btn.btn-primary.buffer-bottom {:on-click (fn [_] (create))} "Create"]
-   [:input {:type        "text"
-            :placeholder "Search"
-            :class       "form-control search-input"
-            :value       search
-            :on-change   #(update-search (.. % -target -value))}]])
+  [:div.card-header.page-header
+   [:div.page-title [:h5 "Posts"]]
+   [:div.page-search
+    [:input.form-control {:type        :text
+                          :placeholder "Search"
+                          :value       search
+                          :on-change   #(update-search (.. % -target -value))}]]
+   [:div.page-actions
+    [:span.action-button {:on-click #(create)} [:i.fas.fa-plus]]]])
 
-(defn- posts-list [posts details]
-  [:div {:class "row buffer-top"}
+(defn- body [posts details]
+  [:div.card-body.row
    (for [post posts]
-     [:div {:class "col-md-3 col-sm-4 buffer-bottom"
-            :key   (:id post)}
-      [:a {:class    "card"
-           :on-click (fn [_] (details post))}
-       [:div {:class "card-body"}
-        [:h5 {:class "card-title"} (:title post)]
-        [:p {:class "card-text text-truncate"} (:body post)]]]])])
+     [:div.col-md-3.col-sm-4.buffer-bottom {:key (:id post)}
+      [:a.card {:on-click (fn [_] (details post))}
+       [:div.card-body
+        [:h5.card-title (:title post)]
+        [:p.card-text.text-truncate (:body post)]]]])])
 
 (defn- footer [page-sizes selected-size update-selected-size]
-  [:div {:class "text-center"}
+  [:div.card-footer.text-center
    (for [page-size page-sizes]
-     [:button {:class    (str "btn mr-1 " (if (= page-size selected-size) "btn-primary" "btn-light"))
-               :key      page-size
-               :on-click (fn [_] (update-selected-size page-size))} page-size])])
+     [:button.btn.mr-1 {:class    (if (= page-size selected-size) "btn-primary" "btn-light")
+                        :key      page-size
+                        :on-click (fn [_] (update-selected-size page-size))} page-size])])
 
 ;; === Facade ===
 
@@ -61,7 +60,7 @@
 (defn container []
   (let [facade (facade)]
     (fn []
-      [:div
+      [:div.card
        [header @(:search facade) (:update-search facade) (:create facade)]
-       [posts-list @(:posts facade) (:details facade)]
+       [body @(:posts facade) (:details facade)]
        [footer @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))

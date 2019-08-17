@@ -17,9 +17,34 @@ a:hover {
     flex: 1;
 }
 
-.search-input {
-    max-width: 360px;
-    margin: auto;
+.page-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.page-title {
+    display: flex;
+    align-self: center;
+}
+
+.page-search {
+    display: flex;
+    align-self: center;
+    width: 300px;
+}
+
+.page-actions {
+    display: flex;
+    align-content: center;
+}
+
+.action-button {
+    display: flex;
+    align-self: center;
+    cursor: pointer;
+    color: #007bff;
+    margin-left: 1rem;
 }
 
 .buffer-top {
@@ -28,10 +53,4 @@ a:hover {
 
 .buffer-bottom {
     margin-bottom: 1rem;
-}
-
-.action-icon {
-    cursor: pointer;
-    color: #007bff;
-    margin-left: 1rem;
 }
