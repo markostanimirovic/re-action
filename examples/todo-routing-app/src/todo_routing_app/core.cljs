@@ -21,6 +21,11 @@
    [:h3 "TODO Details"]
    [:p (str "Body of TODO with id: " id)]])
 
+(defn todo-create []
+  [:div
+   [:h3 "TODO Create"]
+   [:p "This is TODO create page"]])
+
 ;; === Example: Get current route with segments and params from session ===
 
 (defn todo-edit []
@@ -44,6 +49,7 @@
 (router/defroute "/home" todo-home)
 (router/defroute "/todo/list" todo-list)
 (router/defroute "/todo/:id" todo-details)
+(router/defroute "/todo/create" todo-create)
 (router/defroute "/todo/:id/edit" todo-edit)
 (router/defroute "/not-found" not-found)
 
@@ -62,6 +68,7 @@
    [:button {:on-click #(router/navigate "/todo")} "TODO List"]
    [:button {:on-click #(router/navigate "/todo/1")} "TODO 1 Details"]
    [:button {:on-click #(router/navigate "/todo/2")} "TODO 2 Details"]
+   [:button {:on-click #(router/navigate "/todo/create")} "TODO Create"]
    [:button {:on-click #(router/navigate "/todo/1/edit")} "TODO 1 Edit"]
    [:button {:on-click #(router/navigate "/todo/2/edit")} "TODO 2 Edit"]
    [:button {:on-click #(router/navigate "/some-not-defined-route")} "Not Found"]
