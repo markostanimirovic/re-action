@@ -7,47 +7,53 @@
 
 ;; === Presentational Components ===
 
-(defn- edit-form []
+(defn header [back]
+  [:div.card-header
+   [:span "Edit Post"]
+   [:span.float-right {:on-click #(back)}
+    [:i.fas.fa-chevron-left.action-icon]]])
+
+(defn body [post save]
   (let [post-form (form/create {:title {:required (comp not empty?)}
                                 :body  {:required (comp not empty?)}})]
-    (fn [post save]
-      [:form {:on-submit     #(do (.preventDefault %)
-                                  (save (form/value @post-form)))
-              :auto-complete :off}
-       [:div.form-group
-        [:label {:for :title} "Title" [:span.text-danger " *"]]
-        [:input.form-control {:id            :title
-                              :type          :text
-                              :default-value (:title post)
-                              :class         (list
-                                               (when (and (form/valid? @post-form :title)
-                                                          (or (form/touched? @post-form :title)
-                                                              (form/dirty? @post-form :title))) :is-valid)
-                                               (when (and (not (form/valid? @post-form :title))
-                                                          (or (form/touched? @post-form :title)
-                                                              (form/dirty? @post-form :title))) :is-invalid))}]
-        (when (and (not (form/valid? @post-form :title))
-                   (or (form/touched? @post-form :title)
-                       (form/dirty? @post-form :title)))
-          [:div.invalid-feedback "Title is required field."])]
-       [:div.form-group
-        [:label {:for :password} "Body" [:span.text-danger " *"]]
-        [:textarea.form-control {:id            :body
-                                 :default-value (:body post)
-                                 :rows          4
-                                 :class         (list
-                                                  (when (and (form/valid? @post-form :body)
-                                                             (or (form/touched? @post-form :body)
-                                                                 (form/dirty? @post-form :body))) :is-valid)
-                                                  (when (and (not (form/valid? @post-form :body))
-                                                             (or (form/touched? @post-form :body)
-                                                                 (form/dirty? @post-form :body))) :is-invalid))}]
-        (when (and (not (form/valid? @post-form :body))
-                   (or (form/touched? @post-form :body)
-                       (form/dirty? @post-form :body)))
-          [:div.invalid-feedback {:key :required} "Body is required field."])]
-       [:button.btn.btn-primary {:disabled (not (form/valid? @post-form))} "Save"]])))
-
+    (fn []
+      [:div.card-body
+       [:form {:on-submit     #(do (.preventDefault %)
+                                   (save (form/value @post-form)))
+               :auto-complete :off}
+        [:div.form-group
+         [:label {:for :title} "Title" [:span.text-danger " *"]]
+         [:input.form-control {:id            :title
+                               :type          :text
+                               :default-value (:title post)
+                               :class         (list
+                                                (when (and (form/valid? @post-form :title)
+                                                           (or (form/touched? @post-form :title)
+                                                               (form/dirty? @post-form :title))) :is-valid)
+                                                (when (and (not (form/valid? @post-form :title))
+                                                           (or (form/touched? @post-form :title)
+                                                               (form/dirty? @post-form :title))) :is-invalid))}]
+         (when (and (not (form/valid? @post-form :title))
+                    (or (form/touched? @post-form :title)
+                        (form/dirty? @post-form :title)))
+           [:div.invalid-feedback "Title is required field."])]
+        [:div.form-group
+         [:label {:for :password} "Body" [:span.text-danger " *"]]
+         [:textarea.form-control {:id            :body
+                                  :default-value (:body post)
+                                  :rows          4
+                                  :class         (list
+                                                   (when (and (form/valid? @post-form :body)
+                                                              (or (form/touched? @post-form :body)
+                                                                  (form/dirty? @post-form :body))) :is-valid)
+                                                   (when (and (not (form/valid? @post-form :body))
+                                                              (or (form/touched? @post-form :body)
+                                                                  (form/dirty? @post-form :body))) :is-invalid))}]
+         (when (and (not (form/valid? @post-form :body))
+                    (or (form/touched? @post-form :body)
+                        (form/dirty? @post-form :body)))
+           [:div.invalid-feedback {:key :required} "Body is required field."])]
+        [:button.btn.btn-primary.float-right {:disabled (not (form/valid? @post-form))} "Save"]]])))
 
 ;; === Facade ===
 
@@ -67,9 +73,10 @@
 
     {:post           (:state post)
      :update-post-id #(re-action/patch-state! store {:post-id %})
-     :save           #(do
-                        (resource/update-post (into @(:state post) %))
-                        (router/navigate (str "/posts/" @(:state post-id))))}))
+     :save           (fn [post-for-update]
+                       (let [updated-post (resource/update-post (into @(:state post) post-for-update))]
+                         (re-action/patch-state! store {:post updated-post})))
+     :back           #(router/navigate (str "/posts/" @(:state post-id)))}))
 
 ;; === Container Component ===
 
@@ -79,5 +86,6 @@
       ((:update-post-id facade) id)
       [:div.row.justify-content-center
        [:div.col-md-9
-        ^{:key id}
-        [edit-form @(:post facade) (:save facade)]]])))
+        [:div.card {:key id}
+         [header (:back facade)]
+         [body @(:post facade) (:save facade)]]]])))

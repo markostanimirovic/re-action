@@ -58,11 +58,13 @@
   (let [index (->> @posts
                    (keep-indexed #(if (= (:id %2) (:id post)) %1))
                    (first))]
-    (swap! posts assoc index post)))
+    (swap! posts assoc index post)
+    post))
 
 (defn add-post [post]
   (let [id (->> @posts
                 (map :id)
                 (apply max)
                 (inc))]
-    (swap! posts conj (assoc post :id id))))
+    (swap! posts conj (assoc post :id id))
+    post))

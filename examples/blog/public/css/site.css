@@ -29,3 +29,9 @@ a:hover {
 .buffer-bottom {
     margin-bottom: 1rem;
 }
+
+.action-icon {
+    cursor: pointer;
+    color: #007bff;
+    margin-left: 1rem;
+}

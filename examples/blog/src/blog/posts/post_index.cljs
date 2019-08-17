@@ -15,13 +15,13 @@
             :value       search
             :on-change   #(update-search (.. % -target -value))}]])
 
-(defn- posts-list [posts]
+(defn- posts-list [posts details]
   [:div {:class "row buffer-top"}
    (for [post posts]
      [:div {:class "col-md-3 col-sm-4 buffer-bottom"
             :key   (:id post)}
       [:a {:class    "card"
-           :on-click #(router/navigate (str "/posts/" (:id post)))}
+           :on-click (fn [_] (details post))}
        [:div {:class "card-body"}
         [:h5 {:class "card-title"} (:title post)]
         [:p {:class "card-text text-truncate"} (:body post)]]]])])
@@ -51,7 +51,8 @@
      :selected-size        (:state selected-size)
      :search               (:state search)
      :update-selected-size #(re-action/patch-state! store {:selected-size %})
-     :update-search        #(re-action/patch-state! store {:search %})}))
+     :update-search        #(re-action/patch-state! store {:search %})
+     :details              #(router/navigate (str "/posts/" (:id %)))}))
 
 ;; === Container Component ===
 
@@ -60,5 +61,5 @@
     (fn []
       [:div
        [search @(:search facade) (:update-search facade)]
-       [posts-list @(:posts facade)]
+       [posts-list @(:posts facade) (:details facade)]
        [pagination @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))

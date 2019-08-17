@@ -6,15 +6,22 @@
 
 ;; === Presentational Components ===
 
-(defn card [post]
-  [:div {:class "card"}
-   [:div {:class "card-header"} "Post Details"]
-   [:div {:class "card-body"}
-    [:label {:class "font-italic font-weight-bold"} "Title"]
-    [:div {:class "card-text"} (:title post)]
-    [:hr]
-    [:label {:class "font-italic font-weight-bold"} "Body"]
-    [:div {:class "card-text text-justify"} (:body post)]]])
+(defn header [edit back]
+  [:div.card-header
+   [:span "Post Details"]
+   [:div.float-right
+    [:span {:on-click #(edit)} [:i.fas.fa-pen.action-icon]]
+    [:span {:on-click #(back)} [:i.fas.fa-chevron-left.action-icon]]]])
+
+(defn body [post]
+  [:div.card-body
+   [:div.form-group
+    [:label "Title"]
+    [:div.card-text (:title post)]]
+   [:hr]
+   [:div.form-group
+    [:label "Body"]
+    [:div.card-text.text-justify (:body post)]]])
 
 ;; === Facade ===
 
@@ -33,7 +40,9 @@
                              (re-action/patch-state! store {:post post})))))
 
     {:post           (:state post)
-     :update-post-id #(re-action/patch-state! store {:post-id %})}))
+     :update-post-id #(re-action/patch-state! store {:post-id %})
+     :edit           #(router/navigate (str "/posts/" @(:state post-id) "/edit"))
+     :back           #(router/navigate "/posts")}))
 
 ;; === Container Component ===
 
@@ -41,4 +50,8 @@
   (let [facade (facade)]
     (fn [id]
       ((:update-post-id facade) id)
-      [card @(:post facade)])))
+      [:div.row.justify-content-center
+       [:div.col-md-9
+        [:div.card
+         [header (:edit facade) (:back facade)]
+         [body @(:post facade)]]]])))
