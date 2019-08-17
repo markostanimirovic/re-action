@@ -61,10 +61,11 @@
     (swap! posts assoc index post)
     post))
 
-(defn add-post [post]
+(defn create-post [post]
   (let [id (->> @posts
                 (map :id)
                 (apply max)
-                (inc))]
-    (swap! posts conj (assoc post :id id))
-    post))
+                (inc))
+        created-post (assoc post :id id)]
+    (swap! posts conj created-post)
+    created-post))

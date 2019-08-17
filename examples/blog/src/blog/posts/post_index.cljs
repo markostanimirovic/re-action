@@ -6,9 +6,10 @@
 
 ;; === Presentational Components ===
 
-(defn- search [search update-search]
+(defn- header [search update-search create]
   [:div {:class "text-center"}
    [:h2 "Posts"]
+   [:button.btn.btn-primary.buffer-bottom {:on-click (fn [_] (create))} "Create"]
    [:input {:type        "text"
             :placeholder "Search"
             :class       "form-control search-input"
@@ -26,7 +27,7 @@
         [:h5 {:class "card-title"} (:title post)]
         [:p {:class "card-text text-truncate"} (:body post)]]]])])
 
-(defn- pagination [page-sizes selected-size update-selected-size]
+(defn- footer [page-sizes selected-size update-selected-size]
   [:div {:class "text-center"}
    (for [page-size page-sizes]
      [:button {:class    (str "btn mr-1 " (if (= page-size selected-size) "btn-primary" "btn-light"))
@@ -52,7 +53,8 @@
      :search               (:state search)
      :update-selected-size #(re-action/patch-state! store {:selected-size %})
      :update-search        #(re-action/patch-state! store {:search %})
-     :details              #(router/navigate (str "/posts/" (:id %)))}))
+     :details              #(router/navigate (str "/posts/" (:id %)))
+     :create               #(router/navigate "/posts/create")}))
 
 ;; === Container Component ===
 
@@ -60,6 +62,6 @@
   (let [facade (facade)]
     (fn []
       [:div
-       [search @(:search facade) (:update-search facade)]
+       [header @(:search facade) (:update-search facade) (:create facade)]
        [posts-list @(:posts facade) (:details facade)]
-       [pagination @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))
+       [footer @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))

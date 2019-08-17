@@ -7,11 +7,11 @@
 
 ;; === Presentational Components ===
 
-(defn header [back]
+(defn header [edit-mode back]
   [:div.card-header
-   [:span "Edit Post"]
-   [:span.float-right {:on-click #(back)}
-    [:i.fas.fa-chevron-left.action-icon]]])
+   [:span (str (if (true? edit-mode) "Edit " "Create ") "Post")]
+   [:span.action-icon.float-right {:on-click #(back)}
+    [:i.fas.fa-chevron-left]]])
 
 (defn body [post save]
   (let [post-form (form/create {:title {:required (comp not empty?)}
@@ -61,21 +61,28 @@
   (let [init-state {:post-id nil :post nil :edit-mode false}
         store (re-action/store init-state)
         post (re-action/select store :post)
+        edit-mode (re-action/select store :edit-mode)
         post-id (-> store
                     (re-action/select-distinct :post-id)
                     (re-streamer/skip 1))]
 
     (subscribe post-id (fn [post-id]
-                         (let [post (resource/get-post (js/parseInt post-id))]
-                           (if (nil? post)
-                             (router/navigate "/not-found")
-                             (re-action/patch-state! store {:post post})))))
+                         (if (nil? post-id)
+                           (re-action/patch-state! store {:post nil :edit-mode false})
+                           (let [post (resource/get-post (js/parseInt post-id))]
+                             (if (nil? post)
+                               (router/navigate "/not-found")
+                               (re-action/patch-state! store {:post post :edit-mode true}))))))
 
     {:post           (:state post)
+     :edit-mode      (:state edit-mode)
      :update-post-id #(re-action/patch-state! store {:post-id %})
-     :save           (fn [post-for-update]
-                       (let [updated-post (resource/update-post (into @(:state post) post-for-update))]
-                         (re-action/patch-state! store {:post updated-post})))
+     :save           #(let [post (if (true? @(:state edit-mode))
+                                   (resource/update-post (into @(:state post) %))
+                                   (resource/create-post %))]
+                        (if (true? @(:state edit-mode))
+                          (re-action/patch-state! store {:post post})
+                          (router/navigate (str "/posts/" (:id post) "/edit"))))
      :back           #(router/navigate (str "/posts/" @(:state post-id)))}))
 
 ;; === Container Component ===
@@ -87,5 +94,5 @@
       [:div.row.justify-content-center
        [:div.col-md-9
         [:div.card {:key id}
-         [header (:back facade)]
+         [header @(:edit-mode facade) (:back facade)]
          [body @(:post facade) (:save facade)]]]])))

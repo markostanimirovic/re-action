@@ -10,6 +10,7 @@
   (router/defroute "/posts" post-index/container)
   (router/defroute "/posts/:id" post-details/container)
   (router/defroute "/posts/:id/edit" post-edit/container)
+  (router/defroute "/posts/create" post-edit/container)
   (router/defroute "/not-found" shared/not-found))
 
 (defn- init-redirections []

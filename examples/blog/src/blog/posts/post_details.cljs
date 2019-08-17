@@ -10,8 +10,8 @@
   [:div.card-header
    [:span "Post Details"]
    [:div.float-right
-    [:span {:on-click #(edit)} [:i.fas.fa-pen.action-icon]]
-    [:span {:on-click #(back)} [:i.fas.fa-chevron-left.action-icon]]]])
+    [:span.action-icon {:on-click #(edit)} [:i.fas.fa-pen]]
+    [:span.action-icon {:on-click #(back)} [:i.fas.fa-chevron-left]]]])
 
 (defn body [post]
   [:div.card-body
