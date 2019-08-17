@@ -40,12 +40,29 @@
                      segments-from-route
                      segments)))
 
+(defn- matched-routes [segments routes]
+  (filter (fn [route]
+            (and (= (count (:segments route)) (count segments))
+                 (segments-match? (:segments route) segments)))
+          routes))
+
+(defn- intersection-count [coll1 coll2]
+  (->> (map #(= %1 %2) coll1 coll2)
+       (filter true?)
+       (count)))
+
+(defn- closest-route [segments routes]
+  (reduce (fn [cl-route route]
+            (if (> (intersection-count (:segments route) segments)
+                   (intersection-count (:segments cl-route) segments))
+              route cl-route))
+          (first routes)
+          (rest routes)))
+
 (defn- segments->route [segments]
   (->> @(:state routes)
-       (filter (fn [route]
-                 (and (= (count (:segments route)) (count segments))
-                      (segments-match? (:segments route) segments))))
-       (first)))
+       (matched-routes segments)
+       (closest-route segments)))
 
 (defn- segments->params [segments-from-route segments]
   (let [params (into {} (filter #(string/starts-with? (name (nth % 0)) ":")
