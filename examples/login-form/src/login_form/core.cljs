@@ -26,30 +26,18 @@
         [:input.form-control {:id    :username
                               :type  :text
                               :class (list
-                                       (when (and (form/valid? @login-form :username)
-                                                  (or (form/touched? @login-form :username)
-                                                      (form/dirty? @login-form :username))) :is-valid)
-                                       (when (and (not (form/valid? @login-form :username))
-                                                  (or (form/touched? @login-form :username)
-                                                      (form/dirty? @login-form :username))) :is-invalid))}]
-        (when (and (not (form/valid? @login-form :username))
-                   (or (form/touched? @login-form :username)
-                       (form/dirty? @login-form :username)))
+                                       (when (form/valid-and-touched-or-dirty? @login-form :username) :is-valid)
+                                       (when (form/invalid-and-touched-or-dirty? @login-form :username) :is-invalid))}]
+        (when (form/invalid-and-touched-or-dirty? @login-form :username)
           [:div.invalid-feedback "Username is required field."])]
        [:div.form-group
         [:label {:for :password} "Password" [:span.text-danger " *"]]
         [:input.form-control {:id    :password
                               :type  :password
                               :class (list
-                                       (when (and (form/valid? @login-form :password)
-                                                  (or (form/touched? @login-form :password)
-                                                      (form/dirty? @login-form :password))) :is-valid)
-                                       (when (and (not (form/valid? @login-form :password))
-                                                  (or (form/touched? @login-form :password)
-                                                      (form/dirty? @login-form :password))) :is-invalid))}]
-        (when (and (not (form/valid? @login-form :password))
-                   (or (form/touched? @login-form :password)
-                       (form/dirty? @login-form :password)))
+                                       (when (form/valid-and-touched-or-dirty? @login-form :password) :is-valid)
+                                       (when (form/invalid-and-touched-or-dirty? @login-form :password) :is-invalid))}]
+        (when (form/invalid-and-touched-or-dirty? @login-form :password)
           (list
             (when (not (form/valid? @login-form :password :required))
               [:div.invalid-feedback {:key :required} "Password is required field."])
