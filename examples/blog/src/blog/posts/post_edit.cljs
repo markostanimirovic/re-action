@@ -19,24 +19,16 @@
                                 :body  {:required (comp not empty?)}})]
     (fn []
       [:div.card-body
-       [:form {:on-submit     #(do (.preventDefault %)
-                                   (save (form/value @post-form)))
-               :auto-complete :off}
+       [:form {:auto-complete :off}
         [:div.form-group
          [:label {:for :title} "Title" [:span.text-danger " *"]]
          [:input.form-control {:id            :title
                                :type          :text
                                :default-value (:title post)
                                :class         (list
-                                                (when (and (form/valid? @post-form :title)
-                                                           (or (form/touched? @post-form :title)
-                                                               (form/dirty? @post-form :title))) :is-valid)
-                                                (when (and (not (form/valid? @post-form :title))
-                                                           (or (form/touched? @post-form :title)
-                                                               (form/dirty? @post-form :title))) :is-invalid))}]
-         (when (and (not (form/valid? @post-form :title))
-                    (or (form/touched? @post-form :title)
-                        (form/dirty? @post-form :title)))
+                                                (when (form/valid-and-touched-or-dirty? @post-form :title) :is-valid)
+                                                (when (form/invalid-and-touched-or-dirty? @post-form :title) :is-invalid))}]
+         (when (form/invalid-and-touched-or-dirty? @post-form :title)
            [:div.invalid-feedback "Title is required field."])]
         [:div.form-group
          [:label {:for :password} "Body" [:span.text-danger " *"]]
@@ -44,17 +36,13 @@
                                   :default-value (:body post)
                                   :rows          4
                                   :class         (list
-                                                   (when (and (form/valid? @post-form :body)
-                                                              (or (form/touched? @post-form :body)
-                                                                  (form/dirty? @post-form :body))) :is-valid)
-                                                   (when (and (not (form/valid? @post-form :body))
-                                                              (or (form/touched? @post-form :body)
-                                                                  (form/dirty? @post-form :body))) :is-invalid))}]
-         (when (and (not (form/valid? @post-form :body))
-                    (or (form/touched? @post-form :body)
-                        (form/dirty? @post-form :body)))
-           [:div.invalid-feedback {:key :required} "Body is required field."])]
-        [:button.btn.btn-primary.float-right {:disabled (not (form/valid? @post-form))} "Save"]]])))
+                                                   (when (form/valid-and-touched-or-dirty? @post-form :body) :is-valid)
+                                                   (when (form/invalid-and-touched-or-dirty? @post-form :body) :is-invalid))}]
+         (when (form/invalid-and-touched-or-dirty? @post-form :body)
+           [:div.invalid-feedback "Body is required field."])]
+        [:button.btn.btn-primary.float-right {:type     :button
+                                              :disabled (not (form/valid? @post-form))
+                                              :on-click #(save (form/value @post-form))} "Save"]]])))
 
 ;; === Facade ===
 

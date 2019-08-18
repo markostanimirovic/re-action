@@ -21,7 +21,7 @@
   [:div.card-body.row
    (for [post posts]
      [:div.col-md-3.col-sm-4.buffer-bottom {:key (:id post)}
-      [:a.card {:on-click (fn [_] (details post))}
+      [:a.card {:on-click #(details post)}
        [:div.card-body
         [:h5.card-title (:title post)]
         [:p.card-text.text-truncate (:body post)]]]])])
@@ -31,7 +31,7 @@
    (for [page-size page-sizes]
      [:button.btn.mr-1 {:class    (if (= page-size selected-size) "btn-primary" "btn-light")
                         :key      page-size
-                        :on-click (fn [_] (update-selected-size page-size))} page-size])])
+                        :on-click #(update-selected-size page-size)} page-size])])
 
 ;; === Facade ===
 
