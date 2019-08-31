@@ -5,8 +5,17 @@ ClojureScript Framework for Building Single Page Applications
 ## Description
 
 Re-Action is a ClojureScript framework for building reactive single page applications.
-It uses Reagent for components render and gives many utilities to developers
+It uses Reagent to render components and gives many utilities to developers
 such as state management, routing and forms managing.
+
+In Re-Action framework, code is organized by pages. Page has following parts:
+- Facade
+- Container component
+- Presentational components
+
+Facade contains state management of current page and its presentational logic.
+Container component delegates actions to the facade, facade responds to them and produces a new state
+which is reflected in container. Container's template is divided into presentational components.
 
 ## Usage
 
@@ -16,7 +25,62 @@ To use Re-Action in your Leiningen project, add this dependency in `project.clj`
 
 ## Examples
 
-### State Management
+As already stated, page's state is managed in facade. So, let's create `musicians.cljs` and facade into it.
+
+```clojure
+(ns musicians-example.musicians
+  (:require [musicians-example.resource :as resource]
+            [re-action.core :as re-action]
+            [re-streamer.core :refer [subscribe]]))
+
+(defn- facade []
+  (let [init-state {:musicians [] :page-sizes [1 3 5] :selected-size 1 :search ""}
+        store (re-action/store init-state)
+        musicians (re-action/select store :musicians)
+        page-sizes (re-action/select store :page-sizes)
+        selected-size (re-action/select store :selected-size)
+        search (re-action/select store :search)
+        get-musicians (re-action/select-distinct store :selected-size :search)]
+
+    (subscribe get-musicians #(re-action/patch-state! store {:musicians (resource/get-musicians %)}))
+
+    {:musicians            (:state musicians)
+     :page-sizes           (:state page-sizes)
+     :selected-size        (:state selected-size)
+     :search               (:state search)
+     :update-selected-size #(re-action/patch-state! store {:selected-size %})
+     :update-search        #(re-action/patch-state! store {:search %})}))
+```
+
+First, we need to define initial state of the page. It contains musicians vector, possible page sizes,
+selected size and search criteria. After that, we define musicians page store. Store is created using
+`store` function from `re-action.core` namespace.
+
+Next step is to decompose the state from store to separate streams of data. This is made possible using `select`
+function from `re-action.core`. Streams that we need for our musicians page: `musicians`, `page-sizes`,
+`selected-size` and `search`. Also we need to listen to the selected size and search criteria changes,
+and for that purpose `get-musicians` stream is created. On every change into this stream,
+`get-musicians` function is called from `resource` namespace.
+
+```clojure
+(ns musicians-example.resource
+  (:require [clojure.string :as string]))
+
+(defn get-musicians [params]
+  (let [musicians ["Jimi Hendrix" "Eric Clapton" "Steve Ray Vaughan" "Ritchie Blackmore"]]
+    (->> (filter #(string/includes? % (:search params)) musicians)
+         (take (:selected-size params)))))
+```
+
+Resource should fetch musicians from the server, but in this simple example,
+`get-musicians` function filters the vector of musicians by passed search criteria and selected size.
+
+Return value of facade is a hash map of exposed data and functions to the container component.
+Let's create container and presentational components for musicians page in `musicians` namespace.
+
+```clojure
+
+```
 
 #### Session
 
