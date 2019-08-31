@@ -2,15 +2,28 @@
 
 ClojureScript Framework for Building Single Page Applications
 
+## Description
+
+Re-Action is a ClojureScript framework for building reactive single page applications.
+It uses Reagent for components render and gives many utilities to developers
+such as state management, routing and forms managing.
+
 ## Usage
 
-To use Re-Streamer in your Leiningen project, add this dependency in project.clj:
+To use Re-Action in your Leiningen project, add this dependency in `project.clj`:
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.stanimirovic/re-action.svg)](https://clojars.org/org.clojars.stanimirovic/re-action)
 
 ## Examples
 
-Check examples directory.
+### State Management
+
+#### Session
+
+### Routing
+
+### Forms
+
 
 ## License
 
