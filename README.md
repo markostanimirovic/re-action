@@ -79,10 +79,46 @@ Return value of facade is a hash map of exposed data and functions to the contai
 Let's create container and presentational components for musicians page in `musicians` namespace.
 
 ```clojure
+(defn- header [search update-search]
+  [:div.card-header
+   [:h5 "Posts"]
+   [:input.form-control {:type        :text
+                          :placeholder "Search"
+                          :value       search
+                          :on-change   #(update-search (.. % -target -value))}]])
 
+(defn- body [musicians]
+  [:div.card-body.row
+   (for [musician musicians]
+     [:div.col-md-3.col-sm-4.mb-3 {:key (:id musician)}
+      [:div.card
+       [:div.card-body musician]]])])
+
+(defn- footer [page-sizes selected-size update-selected-size]
+  [:div.card-footer.text-center
+   (for [page-size page-sizes]
+     [:button.btn.mr-1 {:class    (if (= page-size selected-size) "btn-primary" "btn-light")
+                        :key      page-size
+                        :on-click #(update-selected-size page-size)} page-size])])
 ```
 
-#### Session
+There are three presentational components: `header`, `body` and `footer`. They don't contain any business
+logic. So, data and actions are passed as input parameters. For styling is used Bootstrap 4.
+
+```clojure
+(defn container []
+  (let [facade (facade)]
+    (fn []
+      [:div.card
+       [header @(:search facade) (:update-search facade)]
+       [body @(:musicians facade)]
+       [footer @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))
+```
+
+Facade is initialized when the container is mounted. Container extracts data and actions from the facade,
+and passes it to the presentational components.
+
+### Session
 
 ### Routing
 
