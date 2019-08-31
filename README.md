@@ -6,7 +6,7 @@ ClojureScript Framework for Building Single Page Applications
 
 Re-Action is a ClojureScript framework for building reactive single page applications.
 It uses Reagent to render components and gives many utilities to developers
-such as state management, routing and forms managing.
+such as state management, session, routing and forms managing.
 
 In Re-Action framework, code is organized by pages. Page has following parts:
 - Facade
@@ -16,6 +16,12 @@ In Re-Action framework, code is organized by pages. Page has following parts:
 Facade contains state management of current page and its presentational logic.
 Container component delegates actions to the facade, facade responds to them and produces a new state
 which is reflected in container. Container's template is divided into presentational components.
+
+Re-Action architecture is shown in following image:
+
+![Re-Action Architecture](https://github.com/stanimirovic/re-action/blob/master/resources/img/re-action-architecture.png)
+
+Session is used in order to share the state between pages. Session is explained through example [here](#session).
 
 ## Usage
 
@@ -83,9 +89,9 @@ Let's create container and presentational components for musicians page in `musi
   [:div.card-header
    [:h5 "Posts"]
    [:input.form-control {:type        :text
-                          :placeholder "Search"
-                          :value       search
-                          :on-change   #(update-search (.. % -target -value))}]])
+                         :placeholder "Search"
+                         :value       search
+                         :on-change   #(update-search (.. % -target -value))}]])
 
 (defn- body [musicians]
   [:div.card-body.row
