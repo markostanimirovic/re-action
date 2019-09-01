@@ -75,7 +75,7 @@ On every change into this stream, `get-musicians` function is called from `resou
   (:require [clojure.string :as string]))
 
 (defn get-musicians [params]
-  (->> ["Jimi Hendrix" "Eric Clapton" "Steve Ray Vaughan" "Ritchie Blackmore"]
+  (->> ["Jimi Hendrix" "Eric Clapton" "Stevie Ray Vaughan" "Ritchie Blackmore"]
        (filter #(string/includes? % (:search params)))
        (take (:selected-size params))))
 ```
@@ -88,36 +88,34 @@ Let's create container and presentational components for musicians page in `musi
 
 ```clojure
 (defn- header [search update-search]
-  [:div.card-header
-   [:h5 "Posts"]
-   [:input.form-control {:type        :text
-                         :placeholder "Search"
-                         :value       search
-                         :on-change   #(update-search (.. % -target -value))}]])
+  [:div
+   [:h2 "Posts"]
+   [:input {:type        :text
+            :placeholder "Search"
+            :value       search
+            :on-change   #(update-search (.. % -target -value))}]])
 
 (defn- body [musicians]
-  [:div.card-body.row
+  [:ul
    (for [musician musicians]
-     [:div.col-md-3.col-sm-4.mb-3 {:key (:id musician)}
-      [:div.card
-       [:div.card-body musician]]])])
+     [:li {:key (:id musician)} musician])])
 
 (defn- footer [page-sizes selected-size update-selected-size]
-  [:div.card-footer.text-center
+  [:div
    (for [page-size page-sizes]
-     [:button.btn.mr-1 {:class    (if (= page-size selected-size) "btn-primary" "btn-light")
-                        :key      page-size
-                        :on-click #(update-selected-size page-size)} page-size])])
+     [:button {:style    (when (= page-size selected-size) {:background-color :aqua})
+               :key      page-size
+               :on-click #(update-selected-size page-size)} page-size])])
 ```
 
 There are three presentational components: `header`, `body` and `footer`. They don't contain any business
-logic. So, data and actions are passed as input parameters. For styling is used Bootstrap 4.
+logic. So, data and actions are passed as input parameters.
 
 ```clojure
 (defn container []
   (let [facade (facade)]
     (fn []
-      [:div.card
+      [:div
        [header @(:search facade) (:update-search facade)]
        [body @(:musicians facade)]
        [footer @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))
