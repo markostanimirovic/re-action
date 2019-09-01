@@ -7,14 +7,15 @@ ClojureScript Framework for Building Single Page Applications
 Re-Action is a ClojureScript framework for building reactive single page applications.
 It uses Reagent to render components and provides a lot of utility to developers
 such as state management, session, router and form helper.
+Re-Action state management and data flow rely on Re-Streamer, library for reactive programming.
+More details about Re-Streamer you can find [here](https://github.com/stanimirovic/re-streamer).
 
 In Re-Action framework, code is organized by pages. Page has following parts:
 - Facade
-- Container component
-- Presentational components
+- Container Component
+- Presentational Components
 
 Facade contains state management for current page.
-Re-Action state management is based on [Re-Streamer](https://github.com/stanimirovic/re-streamer) library.
 Container component delegates actions to the facade, facade responds to them and produces a new state
 which is reflected in container. Container's template is divided into presentational components.
 
@@ -64,9 +65,9 @@ selected size and search criteria. After that, we define musicians page store. S
 `store` function from `re-action.core` namespace.
 
 Next step is to decompose the state from store to separate streams of data. This is made possible using `select`
-function from `re-action.core`. Streams that we need for our musicians page: `musicians`, `page-sizes`,
+function from `re-action.core`. Streams that we need for our musicians container: `musicians`, `page-sizes`,
 `selected-size` and `search`. Also we need to listen to the selected size and search criteria changes,
-and for that purpose is used `get-musicians` stream. It is created using `select-distinct` function,
+and for that purpose `get-musicians` stream is used. It is created using `select-distinct` function,
 that will emit a new value only if it's not the same as an old value.
 On every change into this stream, `get-musicians` function is called from `resource` namespace.
 
@@ -84,7 +85,7 @@ Resource should fetch musicians from the server, but in this simple example,
 `get-musicians` function filters the vector of musicians by passed search criteria and selected size.
 
 Return value of facade is a hash map of exposed data and functions to the container component.
-Let's create container and presentational components for musicians page in `musicians` namespace.
+Let's create musicians container and presentational components in `musicians` namespace.
 
 ```clojure
 (defn- header [search update-search]
@@ -109,7 +110,7 @@ Let's create container and presentational components for musicians page in `musi
 ```
 
 There are three presentational components: `header`, `body` and `footer`. They don't contain any business
-logic. So, data and actions are passed as input parameters.
+logic. So, data and functions are passed as input parameters.
 
 ```clojure
 (defn container []
@@ -121,13 +122,13 @@ logic. So, data and actions are passed as input parameters.
        [footer @(:page-sizes facade) @(:selected-size facade) (:update-selected-size facade)]])))
 ```
 
-Facade is initialized when the container is mounted. Container extracts data and actions from the facade,
-and passes them to presentational components.
+Facade is initialized when the container is mounted. Container extracts data and functions from the facade,
+and forwards them to the presentational components.
 
 ### Session
 
-Session is a store for shared state between facades. Re-Action's `session` namespace contains two functions
-`put!` and `get`. Now, let's walk through simple example.
+Session is a store for shared state between facades. Re-Action `session` namespace contains two functions:
+`put!` and `get`. Now, let's walk through the simple example.
 
 ```clojure
 (ns example.session
@@ -141,9 +142,9 @@ Session is a store for shared state between facades. Re-Action's `session` names
     {:foo-bar (:state foo-bar)}))
 ```
 
-Let's suppose that foo page contains the input field for editing foo-bar property, and bar page contains
-paragraph for displaying a value of foo-bar property. Foo facade exposes `update-foo-bar` function to the
-foo container. This function puts foo bar value to the session. On the other hand, bar facade gets foo-bar
+Let's suppose that foo page contains the input field for editing `foo-bar` property, and bar page contains
+paragraph to display the value of `foo-bar`. Foo facade exposes `update-foo-bar` function to the
+foo container. This function puts `foo-bar` value to the session. On the other hand, bar facade gets `foo-bar`
 property as a stream from the session and exposes it to the bar container.
 
 ### Router
@@ -171,14 +172,14 @@ Let's create three containers into `router.cljs`.
 ```
 
 Function `defroute` is used to define the route for a particular page (container).
-If route has parameters, they are passed to the container as an input params.
+If route has parameters, they are passed to the container as an input parameters.
 Also, current route with params could be obtained from Re-Action session:
 
 ```clojure
 (def current-route (session/get :current-route))
 ``` 
 
-Re-Action router also provides redirections:
+Re-Action `router` namespace also provides redirections:
 
 ```clojure
 (router/redirect "/" "/home")
@@ -206,9 +207,15 @@ Let's now define the application shell.
 Function `navigate` is used to change the current route.
 Function `outlet` is a placeholder where current route's container will be rendered.
 
+Lastly, it is necessary to call `start` function in order to start routing.
+
+```clojure
+(router/start)
+```
+
 ### Form
 
-Re-Action form namespace provides helper functions for managing forms.
+Re-Action `form` namespace provides helper functions for managing forms.
 Let's walk through these functions.
 
 ```clojure
