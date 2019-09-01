@@ -66,8 +66,9 @@ selected size and search criteria. After that, we define musicians page store. S
 Next step is to decompose the state from store to separate streams of data. This is made possible using `select`
 function from `re-action.core`. Streams that we need for our musicians page: `musicians`, `page-sizes`,
 `selected-size` and `search`. Also we need to listen to the selected size and search criteria changes,
-and for that purpose `get-musicians` stream is created. On every change into this stream,
-`get-musicians` function is called from `resource` namespace.
+and for that purpose is used `get-musicians` stream. It is created using `select-distinct` function,
+that will emit a new value only if it's not the same as an old value.
+On every change into this stream, `get-musicians` function is called from `resource` namespace.
 
 ```clojure
 (ns example.resource
