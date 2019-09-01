@@ -13,7 +13,8 @@ In Re-Action framework, code is organized by pages. Page has following parts:
 - Container component
 - Presentational components
 
-Facade contains state management of current page and its presentational logic.
+Facade contains state management for current page.
+Re-Action state management is based on [Re-Streamer](https://github.com/stanimirovic/re-streamer) library.
 Container component delegates actions to the facade, facade responds to them and produces a new state
 which is reflected in container. Container's template is divided into presentational components.
 
@@ -206,8 +207,70 @@ Let's now define the application shell.
 Function `navigate` is used to change the current route.
 Function `outlet` is a placeholder where current route's container will be rendered.
 
-### Form Helper
+### Form
 
+Re-Action form namespace provides helper functions for managing forms.
+Let's walk through these functions.
+
+```clojure
+(ns example.form
+  (:require [re-action.form :as form]))
+
+(defn create-person []
+  (let [person-form (form/create {:first-name {:required   (comp not empty?)
+                                               :max-length #(> 10 (count %))}
+                                  :last-name  {:required   (comp not empty?)
+                                               :min-length #(< 4 (count %))}})]
+    (fn []
+      [:form
+       [:label "First Name"]
+       [:input {:type :text :id :first-name}]
+       [:div {:style {:color :red}}
+        (when (form/touched? @person-form :first-name) [:p "First Name is touched."])
+        (when (form/dirty? @person-form :first-name) [:p "First Name is dirty."])
+        (when (not (form/valid? @person-form :first-name)) [:p "First Name is not valid."])]
+       [:br]
+       [:label "Last Name"]
+       [:input {:type :text :id :last-name}]
+       [:div {:style {:color :red}}
+        (when (form/invalid-and-touched-or-dirty? @person-form :last-name)
+          (list
+            (when (not (form/valid? @person-form :last-name :required))
+              [:p {:key :required} "Last Name is required field."])
+            (when (not (form/valid? @person-form :last-name :min-length))
+              [:p {:key :min-length} "Last Name must have at least 5 characters."])))]
+       [:br]
+       [:button {:type     :button
+                 :on-click #(println (form/value @person-form))
+                 :disabled (not (form/valid? @person-form))} "Save"]])))
+```
+
+First function of this namespace is `create`. It accepts configuration in format:
+
+```clojure
+{:field1-id {:validator11-key :validator11
+             :validator12-key :validator12}
+ :field2-id {:validator21-key :validator21
+             :validator22-key :validator22
+             :validator23-key :validator23}}
+```
+
+Function `value` returns a value of passed form in format:
+
+```clojure
+{:field1-id :field1-value
+ :field2-id :field2-value}
+```
+
+If `touched?`/`dirty?`/`valid?` function is called with form, it will return `true` if form is touched/dirty/valid.
+If some of these three functions is called with form and field's id, it will return `true` if passed field from that
+form is touched, dirty or valid. Also, `valid?` can accept validator key as a third argument and in that case,
+it will return `true` if field is valid by passed validator.
+
+However, there are derived functions from this namespace:
+`touched-or-dirty?`, `valid-and-touched-or-dirty?`, `invalid-and-touched-or-dirty?`.
+
+For more details, check [examples](https://github.com/stanimirovic/re-action/tree/master/examples) directory.
 
 ## License
 
