@@ -5,8 +5,8 @@ ClojureScript Framework for Building Single Page Applications
 ## Description
 
 Re-Action is a ClojureScript framework for building reactive single page applications.
-It uses Reagent to render components and gives many utilities to developers
-such as state management, session, routing and forms managing.
+It uses Reagent to render components and provides a lot of utility to developers
+such as state management, session, router and form helper.
 
 In Re-Action framework, code is organized by pages. Page has following parts:
 - Facade
@@ -146,9 +146,67 @@ paragraph for displaying a value of foo-bar property. Foo facade exposes `update
 foo container. This function puts foo bar value to the session. On the other hand, bar facade gets foo-bar
 property as a stream from the session and exposes it to the bar container.
 
-### Routing
+### Router
 
-### Forms
+Let's create three containers into `router.cljs`.
+
+```clojure
+(ns example.router
+  (:require [re-action.router :as router]))
+
+(defn home-container []
+  [:h1 "Home Page"])
+
+(defn posts-container []
+  [:h1 "Posts Page"])
+
+(defn post-details-container [id]
+  [:div
+   [:h1 "Post Details Page"
+    [:p (str "Id: " id)]]])
+
+(router/defroute "/home" home-container)
+(router/defroute "/posts" posts-container)
+(router/defroute "/posts/:id" post-details-container)
+```
+
+Function `defroute` is used to define the route for a particular page (container).
+If route has parameters, they are passed to the container as an input params.
+Also, current route with params could be obtained from Re-Action session:
+
+```clojure
+(def current-route (session/get :current-route))
+``` 
+
+Re-Action router also provides redirections:
+
+```clojure
+(router/redirect "/" "/home")
+(router/redirect "**" "/home")
+```
+
+There is an option to define a not found redirection by using `**`.
+
+Let's now define the application shell.
+
+```clojure
+(defn shell []
+  [:div
+   [:h1 "Header"]
+   [:a {:on-click #(router/navigate "/")} "Home"]
+   [:a {:on-click #(router/navigate "/posts")} "Posts"]
+   [:a {:on-click #(router/navigate "/posts/1")} "Post 1"]
+   [:a {:on-click #(router/navigate "/posts/2")} "Post 2"]
+   [:a {:on-click #(router/navigate "/some-not-defined-route")} "Not Found"]
+   [:br]
+   (router/outlet)
+   [:small "Footer"]])
+```
+
+Function `navigate` is used to change the current route.
+Function `outlet` is a placeholder where current route's container will be rendered.
+
+### Form Helper
 
 
 ## License
