@@ -34,8 +34,8 @@ To use Re-Action in your Leiningen project, add this dependency in `project.clj`
 As already stated, page's state is managed in facade. So, let's create `musicians.cljs` and facade into it.
 
 ```clojure
-(ns musicians-example.musicians
-  (:require [musicians-example.resource :as resource]
+(ns example.musicians
+  (:require [example.resource :as resource]
             [re-action.core :as re-action]
             [re-streamer.core :refer [subscribe]]))
 
@@ -69,13 +69,13 @@ and for that purpose `get-musicians` stream is created. On every change into thi
 `get-musicians` function is called from `resource` namespace.
 
 ```clojure
-(ns musicians-example.resource
+(ns example.resource
   (:require [clojure.string :as string]))
 
 (defn get-musicians [params]
-  (let [musicians ["Jimi Hendrix" "Eric Clapton" "Steve Ray Vaughan" "Ritchie Blackmore"]]
-    (->> (filter #(string/includes? % (:search params)) musicians)
-         (take (:selected-size params)))))
+  (->> ["Jimi Hendrix" "Eric Clapton" "Steve Ray Vaughan" "Ritchie Blackmore"]
+       (filter #(string/includes? % (:search params)))
+       (take (:selected-size params))))
 ```
 
 Resource should fetch musicians from the server, but in this simple example,
@@ -122,9 +122,29 @@ logic. So, data and actions are passed as input parameters. For styling is used 
 ```
 
 Facade is initialized when the container is mounted. Container extracts data and actions from the facade,
-and passes it to the presentational components.
+and passes them to presentational components.
 
 ### Session
+
+Session is a store for shared state between facades. Re-Action's `session` namespace contains two functions
+`put!` and `get`. Now, let's walk through simple example.
+
+```clojure
+(ns example.session
+  (:require [re-action.session :as session]))
+
+(defn foo-facade []
+  {:update-foo-bar #(session/put! :foo-bar %)})
+
+(defn bar-facade []
+  (let [foo-bar (session/get :foo-bar)]
+    {:foo-bar (:state foo-bar)}))
+```
+
+Let's suppose that foo page contains the input field for editing foo-bar property, and bar page contains
+paragraph for displaying a value of foo-bar property. Foo facade exposes `update-foo-bar` function to the
+foo container. This function puts foo bar value to the session. On the other hand, bar facade gets foo-bar
+property as a stream from the session and exposes it to the bar container.
 
 ### Routing
 
