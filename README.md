@@ -27,7 +27,7 @@ Session is used in order to share the state between pages. Session is explained 
 
 ## Usage
 
-To use Re-Action in your Leiningen project, add this dependency in `project.clj`:
+To use Re-Action in your Leiningen project, add following dependency in `project.clj`:
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.stanimirovic/re-action.svg)](https://clojars.org/org.clojars.stanimirovic/re-action)
 
@@ -110,7 +110,7 @@ Let's create musicians container and presentational components in `musicians` na
 ```
 
 There are three presentational components: `header`, `body` and `footer`. They don't contain any business
-logic. So, data and functions are passed as input parameters.
+logic. So, data and functions are passed as input arguments.
 
 ```clojure
 (defn container []
@@ -172,7 +172,7 @@ Let's create three containers into `router.cljs`.
 ```
 
 Function `defroute` is used to define the route for a particular page (container).
-If route has parameters, they are passed to the container as an input parameters.
+If route has parameters, they are passed to the container as input arguments.
 Also, current route with params could be obtained from Re-Action session:
 
 ```clojure
