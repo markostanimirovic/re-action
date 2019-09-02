@@ -8,7 +8,7 @@ Re-Action is a ClojureScript framework for building reactive single page applica
 It uses Reagent to render components and provides a lot of utility to developers
 such as state management, session, router and form helper.
 Re-Action state management and data flow rely on Re-Streamer, library for reactive programming.
-More details about Re-Streamer you can find [here](https://github.com/stanimirovic/re-streamer).
+You can find more details about Re-Streamer [here](https://github.com/stanimirovic/re-streamer).
 
 In Re-Action framework, code is organized by pages. Page has following parts:
 - Facade
@@ -144,7 +144,7 @@ Session is a store for shared state between facades. Re-Action `session` namespa
 
 Let's suppose that foo page contains the input field for editing `foo-bar` property, and bar page contains
 paragraph to display the value of `foo-bar`. Foo facade exposes `update-foo-bar` function to the
-foo container. This function puts `foo-bar` value to the session. On the other hand, bar facade gets `foo-bar`
+foo container. This function puts `foo-bar` value into session. On the other hand, bar facade gets `foo-bar`
 property as a stream from the session and exposes it to the bar container.
 
 ### Router
@@ -163,8 +163,8 @@ Let's create three containers into `router.cljs`.
 
 (defn post-details-container [id]
   [:div
-   [:h1 "Post Details Page"
-    [:p (str "Id: " id)]]])
+   [:h1 "Post Details Page"]
+   [:p (str "Id: " id)]])
 
 (router/defroute "/home" home-container)
 (router/defroute "/posts" posts-container)
@@ -269,7 +269,7 @@ Function `value` returns a value of passed form in format:
 ```
 
 If `touched?`/`dirty?`/`valid?` function is called with form, it will return `true` if form is touched/dirty/valid.
-If some of these three functions is called with form and field's id, it will return `true` if passed field from that
+If some of these three functions are called with form and field's id, it will return `true` if passed field from that
 form is touched, dirty or valid. Also, `valid?` can accept validator key as a third argument and in that case,
 it will return `true` if field is valid by passed validator.
 
