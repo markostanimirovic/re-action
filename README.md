@@ -5,8 +5,8 @@ ClojureScript Framework for Building Single Page Applications
 ## Description
 
 Re-Action is a ClojureScript framework for building reactive single page applications.
-It uses Reagent to render components and provides a lot of utility to developers
-such as state management, session, router and form helper.
+It uses [Reagent](https://github.com/reagent-project/reagent) to render components
+and provides a lot of utility to developers such as state management, session, router and form helper.
 Re-Action state management and data flow rely on Re-Streamer, library for reactive programming.
 You can find more details about Re-Streamer [here](https://github.com/stanimirovic/re-streamer).
 
